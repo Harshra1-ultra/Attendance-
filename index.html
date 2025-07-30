@@ -11,17 +11,58 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- Teacher View -->
+    <div id="teacher-view" class="container mx-auto p-4 sm:p-6 lg:p-8">
         <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-6">Attendance Tracker</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-6">Attendance Dashboard</h1>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Form Section -->
+                <!-- QR Code Section -->
+                <div class="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-2xl border border-gray-200 lg:col-span-1">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Scan to Attend</h2>
+                    <div id="qrcode-container" class="w-48 h-48 sm:w-56 sm:h-56 bg-white p-2 rounded-lg shadow-md"></div>
+                    <p class="text-sm text-gray-600 mt-4 text-center">This QR code changes every minute.</p>
+                </div>
+
+                <!-- Attendance List Section -->
                 <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Attendees</h2>
+                    <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll Number</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-list" class="bg-white divide-y divide-gray-200">
+                                <!-- Real-time attendee rows will be inserted here -->
+                            </tbody>
+                        </table>
+                         <div id="no-attendees" class="text-center py-10 text-gray-500">
+                            No attendees yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student View -->
+    <div id="student-view" class="hidden">
+        <div class="min-h-screen flex items-center justify-center">
+             <div class="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+                <!-- Form Container -->
+                <div id="form-container">
+                    <h1 class="text-3xl font-bold text-center text-gray-900 mb-6">Mark Your Attendance</h1>
                     <form id="attendance-form" class="space-y-6">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -36,150 +77,178 @@
                             <input type="text" id="roll-number" name="roll-number" required class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="e.g., C-101">
                         </div>
                         <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:scale-105">
-                            Mark Attendance
+                            Submit
                         </button>
                     </form>
                 </div>
-
-                <!-- QR Code Section -->
-                <div class="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-2xl border border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Scan to Attend</h2>
-                    <div id="qrcode" class="w-48 h-48 sm:w-56 sm:h-56 bg-white p-2 rounded-lg shadow-md"></div>
-                    <p class="text-sm text-gray-600 mt-4 text-center">This QR code changes every minute.</p>
+                <!-- Success Message -->
+                <div id="success-message" class="hidden text-center">
+                    <h1 class="text-3xl font-bold text-green-600 mb-4">Success!</h1>
+                    <p class="text-gray-700">Your attendance has been recorded.</p>
                 </div>
-            </div>
-
-            <!-- Attendance List Section -->
-            <div class="mt-10">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Attendees</h2>
-                <div class="bg-white rounded-lg shadow overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll Number</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendance-list" class="bg-white divide-y divide-gray-200">
-                            <!-- Attendee rows will be inserted here -->
-                        </tbody>
-                    </table>
-                     <div id="no-attendees" class="text-center py-10 text-gray-500">
-                        No attendees yet.
-                    </div>
+                <!-- Expired Link Message -->
+                <div id="expired-message" class="hidden text-center">
+                    <h1 class="text-3xl font-bold text-red-600 mb-4">Link Expired</h1>
+                    <p class="text-gray-700">Please scan the new QR code from your teacher.</p>
                 </div>
-            </div>
+             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const attendanceForm = document.getElementById('attendance-form');
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- App Logic ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Authenticate the user
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Authentication failed:", error);
+                // Handle auth failure, maybe show an error message to the user
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+
+            if (view === 'student') {
+                setupStudentView(urlParams);
+            } else {
+                setupTeacherView();
+            }
+        });
+
+        // --- Teacher View Setup ---
+        function setupTeacherView() {
+            document.getElementById('teacher-view').classList.remove('hidden');
+            const qrcodeContainer = document.getElementById('qrcode-container');
             const attendanceList = document.getElementById('attendance-list');
             const noAttendeesMessage = document.getElementById('no-attendees');
-            const qrcodeContainer = document.getElementById('qrcode');
-
-            let attendees = [];
             let qrcodeInstance = null;
-
-            // --- QR Code Generation ---
+            
+            // Function to generate QR code
             function generateQRCode() {
-                // Clear previous QR code
                 qrcodeContainer.innerHTML = '';
+
+                // IMPORTANT: For a live website, use the line below to get the actual page URL.
+                // const baseUrl = window.location.href.split('?')[0];
                 
-                // IMPORTANT: In a live environment on a real server, you would use the following line:
-                // const url = `${window.location.href.split('?')[0]}?t=${new Date().getTime()}`;
-
-                // For this preview environment, we use a placeholder URL.
-                const placeholderUrl = 'https://example.com/attendance';
-                const url = `${placeholderUrl}?t=${new Date().getTime()}`;
-
-
-                // Create a new QR code
+                // For this preview environment, we use a placeholder URL so it's scannable from a phone.
+                const baseUrl = 'https://example.com/attendance';
+                const studentUrl = `${baseUrl}?view=student&t=${Date.now()}`;
+                
                 qrcodeInstance = new QRCode(qrcodeContainer, {
-                    text: url,
-                    width: 224, // Corresponds to w-56
-                    height: 224, // Corresponds to h-56
+                    text: studentUrl,
+                    width: 224,
+                    height: 224,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
                 });
             }
 
-            // Generate the first QR code on load
             generateQRCode();
+            setInterval(generateQRCode, 60000); // Update QR code every minute
 
-            // Update the QR code every minute
-            setInterval(generateQRCode, 60000);
+            // Listen for real-time updates from Firestore
+            const attendeesCollection = collection(db, `/artifacts/${appId}/public/data/attendees`);
+            const q = query(attendeesCollection);
+            
+            onSnapshot(q, (snapshot) => {
+                let attendees = [];
+                snapshot.forEach(doc => {
+                    attendees.push(doc.data());
+                });
 
-
-            // --- Form Submission and List Rendering ---
-            attendanceForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const nameInput = document.getElementById('name');
-                const emailInput = document.getElementById('email');
-                const rollNumberInput = document.getElementById('roll-number');
-
-                // Basic validation
-                if (!nameInput.value.trim() || !emailInput.value.trim() || !rollNumberInput.value.trim()) {
-                    // In a real app, you'd show a more user-friendly error message
-                    console.error("All fields are required.");
-                    return;
-                }
-                
-                const newAttendee = {
-                    name: nameInput.value.trim(),
-                    email: emailInput.value.trim(),
-                    rollNumber: rollNumberInput.value.trim(),
-                };
-
-                // Add to the attendees array
-                attendees.push(newAttendee);
-
-                // Sort attendees by email alphabetically
+                // Sort by email
                 attendees.sort((a, b) => a.email.localeCompare(b.email));
-
-                // Re-render the list
-                renderAttendees();
-
-                // Clear the form fields
-                attendanceForm.reset();
-                nameInput.focus();
-            });
-
-            function renderAttendees() {
-                // Clear the current list
+                
+                // Render the list
                 attendanceList.innerHTML = '';
-
                 if (attendees.length === 0) {
                     noAttendeesMessage.style.display = 'block';
-                    attendanceList.parentElement.classList.add('hidden');
                 } else {
                     noAttendeesMessage.style.display = 'none';
-                    attendanceList.parentElement.classList.remove('hidden');
+                    attendees.forEach(attendee => {
+                        const row = document.createElement('tr');
+                        row.classList.add('hover:bg-gray-50');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${attendee.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${attendee.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${attendee.rollNumber}</td>
+                        `;
+                        attendanceList.appendChild(row);
+                    });
+                }
+            });
+        }
+
+        // --- Student View Setup ---
+        function setupStudentView(urlParams) {
+            document.getElementById('student-view').classList.remove('hidden');
+            const formContainer = document.getElementById('form-container');
+            const successMessage = document.getElementById('success-message');
+            const expiredMessage = document.getElementById('expired-message');
+            const attendanceForm = document.getElementById('attendance-form');
+
+            const timestamp = urlParams.get('t');
+            const linkAge = Date.now() - Number(timestamp);
+
+            // Check if the link is older than 60 seconds
+            if (!timestamp || linkAge > 60000) {
+                formContainer.classList.add('hidden');
+                expiredMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Handle form submission
+            attendanceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const rollNumber = document.getElementById('roll-number').value.trim();
+
+                if (!name || !email || !rollNumber) {
+                    // Using a custom modal/alert would be better in a real app
+                    console.error("Please fill out all fields.");
+                    return;
                 }
 
+                try {
+                    const attendeesCollection = collection(db, `/artifacts/${appId}/public/data/attendees`);
+                    await addDoc(attendeesCollection, {
+                        name: name,
+                        email: email,
+                        rollNumber: rollNumber,
+                        timestamp: serverTimestamp()
+                    });
+                    
+                    formContainer.classList.add('hidden');
+                    successMessage.classList.remove('hidden');
 
-                // Add each attendee to the table
-                attendees.forEach(attendee => {
-                    const row = document.createElement('tr');
-                    row.classList.add('hover:bg-gray-50');
-
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${attendee.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${attendee.email}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${attendee.rollNumber}</td>
-                    `;
-
-                    attendanceList.appendChild(row);
-                });
-            }
-            
-            // Initial render call to manage the visibility of the table/message
-            renderAttendees();
-        });
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    // Using a custom modal/alert would be better in a real app
+                    console.error("There was an error submitting your attendance. Please try again.");
+                }
+            });
+        }
     </script>
 
 </body>
